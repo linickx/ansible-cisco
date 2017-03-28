@@ -1,0 +1,170 @@
+show run
+Building configuration...
+
+  
+Current configuration : 3651 bytes
+!
+! Last configuration change at 08:44:14 UTC Tue Mar 28 2017 by nick
+! NVRAM config last updated at 16:50:36 UTC Wed Mar 22 2017 by nick
+!
+version 15.6
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname r2
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+aaa new-model
+!
+!
+aaa authentication login sshvty local
+aaa authorization exec sshexc local 
+!
+!
+!
+!
+!
+aaa session-id common
+ethernet lmi ce
+!
+!
+!
+mmi polling-interval 60
+no mmi auto-configure
+no mmi pvc
+mmi snmp-timeout 180
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+ip domain name lab
+ip name-server 8.8.8.8
+ip name-server 8.8.4.4
+ip name-server 208.67.222.222
+ip name-server 208.67.220.220
+ip cef
+no ipv6 cef
+!
+multilink bundle-name authenticated
+!
+domain lab
+!
+!
+!
+username nick privilege 15 password 0 my_password
+!
+redundancy
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface GigabitEthernet0/0
+ ip address 10.255.0.95 255.255.0.0
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/1
+ ip address dhcp hostname vrl-r2
+ duplex auto
+ speed auto
+ media-type rj45
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+ip ssh version 2
+!
+!
+kron occurrence crypto_key in 1 oneshot
+ policy-list crypto_key
+!
+kron policy-list crypto_key
+ cli event manager run crypto_key
+!
+!
+!
+!
+!
+!
+control-plane
+!
+banner exec ^C
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************^C
+banner incoming ^C
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************^C
+banner login ^C
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************^C
+!
+line con 0
+line aux 0
+line vty 0 4
+ authorization exec sshexc
+ login authentication sshvty
+ length 0
+ transport input telnet ssh
+!
+no scheduler allocate
+ntp server 1.uk.pool.ntp.org
+ntp server 0.uk.pool.ntp.org
+ntp server time.apple.com
+ntp server uk.pool.ntp.org
+event manager applet crypto_key
+ event none
+ action 1 cli command "enable"
+ action 2 cli command "config t"
+ action 3 cli command "crypto key generate rsa general-keys modulus 1024"
+ action 4 cli command "exit"
+ action 5 cli command "write mem"
+ action 6 cli command "end"
+!
+end
+
+r2#

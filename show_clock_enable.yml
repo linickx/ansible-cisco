@@ -1,0 +1,25 @@
+---
+- hosts: ios_devices*
+  gather_facts: no
+  connection: local
+
+  tasks:
+  - name: Include Login Credentials
+    include_vars: secrets.yml
+
+  - name: Define Provider
+    set_fact:
+      provider:
+        host: "{{ ansible_host }}"
+        username: "{{ creds['username'] }}"
+        password: "{{ creds['password'] }}"
+
+  - name: RUN 'Show Clock'
+    ios_command:
+      provider: "{{ provider }}"
+      commands:
+        - show clock
+    register: clock
+
+  - debug:
+      msg: "{{ ansible_host }} {{ clock.stdout_lines }}"

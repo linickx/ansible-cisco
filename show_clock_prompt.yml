@@ -1,0 +1,27 @@
+---
+- hosts: ios_devices
+  gather_facts: no
+  connection: local
+
+  vars_prompt:
+  - name: "mgmt_username"
+    prompt: "Username"
+    private: no
+  - name: "mgmt_password"
+    prompt: "Password"
+
+  vars:
+    provider:
+      host: "{{ ansible_host }}"
+      username: "{{ mgmt_username }}"
+      password: "{{ mgmt_password }}"
+
+  tasks:
+  - name: RUN 'Show Clock'
+    ios_command:
+      provider: "{{ provider }}"
+      commands:
+        - show clock
+    register: clock
+
+  - debug: var=clock.stdout_lines

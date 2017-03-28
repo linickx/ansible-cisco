@@ -1,0 +1,11 @@
+
+[all:vars]
+# OSX / Homebrew hack, as I have python3 installed.
+ansible_python_interpreter=/usr/local/Cellar/python/2.7.13/bin/python2.7
+
+[ios_devices]
+r1 ansible_host=10.10.10.135
+r2 ansible_host=10.10.10.136
+
+[ios_devices_enable]
+r3 ansible_host=10.10.10.137

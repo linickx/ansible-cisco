@@ -1,0 +1,43 @@
+---
+- hosts: ios_devices*
+  gather_facts: no
+  connection: local
+
+  vars_prompt:
+  - name: "mgmt_username"
+    prompt: "Username"
+    private: no
+  - name: "mgmt_password"
+    prompt: "Password"
+  - name: "enable_password"
+    prompt: "Enable Password"
+
+  tasks:
+  - name: Define Provider (ALL)
+    set_fact:
+      provider:
+        host: "{{ ansible_host }}"
+        username: "{{ mgmt_username }}"
+        password: "{{ mgmt_password }}"
+
+  - name: Define Provider (Enable)
+    when: inventory_hostname in groups.ios_devices_enable
+    set_fact:
+        enable:
+            auth_pass: " {{ enable_password }}"
+            authorize: yes
+
+  - name: Update Provider (Enable)
+    when: inventory_hostname in groups.ios_devices_enable
+    set_fact:
+        provider: "{{ provider | combine(enable) }}"
+
+  - name: RUN 'Show Clock'
+    ios_command:
+      provider: "{{ provider }}"
+      commands:
+        - show clock
+    register: clock
+
+  - debug:
+      msg: "{{ ansible_host }} {{ clock.stdout_lines }}"
